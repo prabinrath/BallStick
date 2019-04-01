@@ -1,5 +1,0 @@
-/home/prabin/git/BallStick/CMakeFiles/edit_cache.dir
-/home/prabin/git/BallStick/CMakeFiles/ballnstick.dir
-/home/prabin/git/BallStick/CMakeFiles/game.dir
-/home/prabin/git/BallStick/CMakeFiles/mouse.dir
-/home/prabin/git/BallStick/CMakeFiles/rebuild_cache.dir

@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/mouse.dir/src/x11_test.cpp.o  -o mouse -rdynamic -lX11 
