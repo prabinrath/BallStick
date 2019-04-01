@@ -16,7 +16,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	overlappingPairCache = new btDbvtBroadphase();
 	dynamicsWorld = new btDiscreteDynamicsWorld(new btCollisionDispatcher(collisionCfg),
 	overlappingPairCache, new btSequentialImpulseConstraintSolver, collisionCfg);
-	dynamicsWorld->setGravity(btVector3(0, -5, 0));
+	dynamicsWorld->setGravity(btVector3(0, -9.8, 0));
 	
 	//stick initialization
 	shape = new btBoxShape(btVector3(20,2.5,2.5));
@@ -28,7 +28,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	stick = new btRigidBody(mass, motionState, shape, localInertia);
 	hinge = new btHingeConstraint(*stick, btVector3(0, 0, 0), btVector3(0, 0, 1), true);
 	hinge->enableMotor(true);
-	hinge->setMaxMotorImpulse(10.0f);
+	hinge->setMaxMotorImpulse(50.0f);
 	dynamicsWorld->addConstraint(hinge);
 	dynamicsWorld->addRigidBody(stick);
 	

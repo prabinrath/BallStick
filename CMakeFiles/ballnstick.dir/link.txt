@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/ballnstick.dir/src/ballnstick.cpp.o  -o ballnstick -rdynamic -lglut -lGL -lGLU -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath 

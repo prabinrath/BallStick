@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 		{
 			break;
 		}
-		//cout<<game.ballVel.getX()<<" "<<game.ballVel.getY()<<" "<<game.ballVel.getZ()<<endl;
+		cout<<game.ballPos.length()<<" "<<game.ballVel.length()<<" ";
 		cout<<game.curang<<" "<<game.motionang<<endl;
 	}
 	return 0;

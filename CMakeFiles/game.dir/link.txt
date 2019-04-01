@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/game.dir/src/play_game.cpp.o CMakeFiles/game.dir/src/game.cpp.o  -o game -rdynamic -lglut -lGL -lGLU -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath -lX11 -lpthread 

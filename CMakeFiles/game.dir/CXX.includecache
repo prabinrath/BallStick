@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/prabin/git/BallStick/src/game.cpp
+game.h
+-
+
+/home/prabin/git/BallStick/src/play_game.cpp
+game.h
+-
+
+include/game.h
+GL/glut.h
+-
+btBulletDynamicsCommon.h
+include/btBulletDynamicsCommon.h
+iostream
+-
+X11/Xlib.h
+-
+thread
+-
+chrono
+-
+cmath
+-
+

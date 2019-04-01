@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/prabin/git/BallStick/src/ballnstick.cpp
+GL/glut.h
+-
+btBulletDynamicsCommon.h
+/home/prabin/git/BallStick/src/btBulletDynamicsCommon.h
+iostream
+-
+

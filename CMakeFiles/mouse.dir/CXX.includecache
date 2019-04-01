@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/prabin/git/BallStick/src/x11_test.cpp
+iostream
+-
+stdio.h
+-
+X11/Xlib.h
+-
+X11/Xlib.h
+-
+stdio.h
+-
+stdlib.h
+-
+

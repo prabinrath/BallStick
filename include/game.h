@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <cmath>
+#include <unistd.h>
 using namespace std;
 #define THETA SIMD_PI / 4.f
 
