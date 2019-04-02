@@ -46,7 +46,7 @@ class BalanceGame
 		static bool RST,QUIT;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
-		void reset_env();
+		void reset_env(int,int);
 		void draw();
 		void timer();
 		static void handleMouse();

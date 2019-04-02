@@ -150,18 +150,51 @@ void BalanceGame::update_hinge_pos(float target, float kp, float dt)
 	}
 }
 
-void BalanceGame::reset_env()
+void BalanceGame::reset_env(int angle_of_rotation,int disp)
 {
 	trans.setIdentity();
-	trans.setOrigin(btVector3(0,7.5, 0));
+	double default_angle=atan(2.5f/20.0f);
+	double radius=sqrt(pow(2.5,2)+pow(20,2));
+	srand(time(0));
+	double t=angle_of_rotation-rand()%(2*angle_of_rotation);
+	double changed_angle=(t)*SIMD_PI/180;
+	cout<<default_angle*180/SIMD_PI<<"  "<<t<<endl;
+	double final_angle1=default_angle+changed_angle;
+	double final_angle2=final_angle1+SIMD_PI-2*default_angle;
+	cout<<"final_angle1 : "<<final_angle1*180/SIMD_PI<<" "<<"final_angle2 :"<<final_angle2*180/SIMD_PI<<endl;
+	double x1=radius*cos(final_angle1);
+	double y1=radius*sin(final_angle1);
+	double x2=radius*cos(final_angle2);
+	double y2=radius*sin(final_angle2);
+	
+	double x=(x1+x2)/2;
+	double y=(y1+y2)/2;
+	//int disp=10;
+	x+=5*cos(SIMD_PI/2+changed_angle);
+	y+=5*sin(SIMD_PI/2+changed_angle);
+
+	double displace_from_center=disp-rand()%(2*disp);
+	double x_dis=displace_from_center*cos(changed_angle);
+	double y_dis=displace_from_center*sin(changed_angle);
+	
+	trans.setOrigin(btVector3(x+x_dis,y+y_dis+1,0));
 	ball->setCenterOfMassTransform(trans);
 	ball->setAngularVelocity(btVector3(0,0,0));
 	ball->setLinearVelocity(btVector3(0,0,0));
 	trans.setIdentity();
-	trans.setOrigin(btVector3(0,0, 0));
+	btQuaternion qtn;
+	
+	
+	trans.setIdentity();
+	qtn.setEuler(0.0, 0.0, changed_angle);
+	trans.setRotation(qtn);
+	trans.setOrigin(btVector3(0, 0, 0));
+
 	stick->setCenterOfMassTransform(trans);
+	TAR=-changed_angle*180/SIMD_PI;
 	stick->setLinearVelocity(btVector3(0,0,0));
 	stick->setAngularVelocity(btVector3(0,0,0));
+
 	RST=false;
 }
 

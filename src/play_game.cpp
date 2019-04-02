@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 		game.timer();
 		if(game.RST)
 		{
-			game.reset_env();
+			game.reset_env(30,15);  // angle_of_rotation,disp
 		}
 		if(game.QUIT)
 		{
