@@ -40,15 +40,20 @@ class BalanceGame
 		void update_hinge_pos(float target, float kp, float dt);
 		static void keyboardFunc(int);
 		static void mouseMotion(int x,int y);
+		
 				
 	public:
 		thread *mouse_handle;
 		static bool RST,QUIT;
+		static float range_of_termination;
+		static float time_of_termination;
+		static float entry_time,elapsed_time;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
 		void timer();
+		void isGameDone();
 		static void handleMouse();
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	

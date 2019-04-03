@@ -1,10 +1,13 @@
 #include<game.h>
 
-float BalanceGame::TAR = 0;
-bool BalanceGame::flag = false;
-bool BalanceGame::RST = false;
-bool BalanceGame::QUIT = false;
-
+float BalanceGame::TAR = 0;                       
+bool BalanceGame::flag = false;                      
+bool BalanceGame::RST = false;                   
+bool BalanceGame::QUIT = false;                 
+float BalanceGame::entry_time=-1;
+float BalanceGame::elapsed_time=0;	
+float BalanceGame::range_of_termination=10;
+float BalanceGame::time_of_termination=5;
 double getTimeDifference(TimePoint end, TimePoint start)
 {
     return ((double)chrono::duration_cast<chrono::milliseconds>(end-start).count()) * 0.001;
@@ -97,7 +100,28 @@ void BalanceGame::handleMouse()
 		}
 	}
 }
-
+void BalanceGame::isGameDone()
+{
+	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
+	{
+		if(entry_time==-1)
+			entry_time=glutGet(GLUT_ELAPSED_TIME);
+		else
+		{
+			elapsed_time=(glutGet(GLUT_ELAPSED_TIME)-entry_time)/1000;
+			if(elapsed_time>time_of_termination)
+			{
+				cout<<"Balanced Successful"<<endl;
+				entry_time=-1;
+				reset_env(30,15);
+			}
+		}
+	}
+	else
+	{
+		entry_time=-1;
+	}
+}
 void BalanceGame::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -129,6 +153,9 @@ void BalanceGame::draw()
 	glPopMatrix();
 	
 	glutSwapBuffers();
+	
+	isGameDone();
+
 }
 
 void BalanceGame::update_hinge_pos(float target, float kp, float dt)
