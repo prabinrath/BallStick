@@ -48,6 +48,7 @@ class BalanceGame
 		static float range_of_termination;
 		static float time_of_termination;
 		static float entry_time,elapsed_time;
+		static float game_start_time;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
 		void reset_env(int,int);

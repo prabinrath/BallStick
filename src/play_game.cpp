@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 		{
 			break;
 		}
-		cout<<game.ballPos.length()<<" "<<game.ballVel.length()<<" ";
-		cout<<game.curang<<" "<<game.motionang<<endl;
+		//cout<<game.ballPos.length()<<" "<<game.ballVel.length()<<" ";
+		//cout<<game.curang<<" "<<game.motionang<<endl;
 	}
 	return 0;
 }

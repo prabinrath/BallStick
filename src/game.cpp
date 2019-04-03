@@ -8,6 +8,7 @@ float BalanceGame::entry_time=-1;
 float BalanceGame::elapsed_time=0;	
 float BalanceGame::range_of_termination=10;
 float BalanceGame::time_of_termination=5;
+float BalanceGame::game_start_time=0;
 double getTimeDifference(TimePoint end, TimePoint start)
 {
     return ((double)chrono::duration_cast<chrono::milliseconds>(end-start).count()) * 0.001;
@@ -102,6 +103,11 @@ void BalanceGame::handleMouse()
 }
 void BalanceGame::isGameDone()
 {
+	if(ballPos.length()>200)
+	{
+		entry_time=-1;
+		reset_env(30,15);
+	}
 	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
 	{
 		if(entry_time==-1)
@@ -113,6 +119,7 @@ void BalanceGame::isGameDone()
 			{
 				cout<<"Balanced Successful"<<endl;
 				entry_time=-1;
+				cout<<"total time taken in seconds: "<<(glutGet(GLUT_ELAPSED_TIME)-game_start_time)/1000<<endl;
 				reset_env(30,15);
 			}
 		}
@@ -185,10 +192,10 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	srand(time(0));
 	double t=angle_of_rotation-rand()%(2*angle_of_rotation);
 	double changed_angle=(t)*SIMD_PI/180;
-	cout<<default_angle*180/SIMD_PI<<"  "<<t<<endl;
+	//cout<<default_angle*180/SIMD_PI<<"  "<<t<<endl;
 	double final_angle1=default_angle+changed_angle;
 	double final_angle2=final_angle1+SIMD_PI-2*default_angle;
-	cout<<"final_angle1 : "<<final_angle1*180/SIMD_PI<<" "<<"final_angle2 :"<<final_angle2*180/SIMD_PI<<endl;
+	//cout<<"final_angle1 : "<<final_angle1*180/SIMD_PI<<" "<<"final_angle2 :"<<final_angle2*180/SIMD_PI<<endl;
 	double x1=radius*cos(final_angle1);
 	double y1=radius*sin(final_angle1);
 	double x2=radius*cos(final_angle2);
@@ -223,6 +230,7 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	stick->setAngularVelocity(btVector3(0,0,0));
 
 	RST=false;
+	game_start_time=glutGet(GLUT_ELAPSED_TIME);
 }
 
 void BalanceGame::timer()
