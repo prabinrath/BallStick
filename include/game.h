@@ -47,14 +47,16 @@ class BalanceGame
 		static bool RST,QUIT;
 		static float range_of_termination;
 		static float time_of_termination;
-		static float entry_time,elapsed_time;
-		static float game_start_time;
+		static TimePoint entry_time;
+		static float elapsed_time;
+		static TimePoint game_start_time;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
 		void timer();
 		void isGameDone();
+		float getTAR();
 		static void handleMouse();
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	

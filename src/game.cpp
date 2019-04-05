@@ -4,14 +4,15 @@ float BalanceGame::TAR = 0;
 bool BalanceGame::flag = false;                      
 bool BalanceGame::RST = false;                   
 bool BalanceGame::QUIT = false;                 
-float BalanceGame::entry_time=-1;
+TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;	
 float BalanceGame::range_of_termination=10;
 float BalanceGame::time_of_termination=5;
-float BalanceGame::game_start_time=0;
+TimePoint BalanceGame::game_start_time=Clock::now(); // current time
+
 double getTimeDifference(TimePoint end, TimePoint start)
 {
-    return ((double)chrono::duration_cast<chrono::milliseconds>(end-start).count()) * 0.001;
+    return ((double)chrono::duration_cast<chrono::milliseconds>(end-start).count()) ;
 }
 
 BalanceGame::BalanceGame(int argc, char** argv)
@@ -105,28 +106,29 @@ void BalanceGame::isGameDone()
 {
 	if(ballPos.length()>200)
 	{
-		entry_time=-1;
+		entry_time=TimePoint();
 		reset_env(30,15);
+		return;
 	}
 	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
 	{
-		if(entry_time==-1)
-			entry_time=glutGet(GLUT_ELAPSED_TIME);
+		if(entry_time==TimePoint())
+			entry_time=Clock::now();
 		else
 		{
-			elapsed_time=(glutGet(GLUT_ELAPSED_TIME)-entry_time)/1000;
+			elapsed_time=getTimeDifference(Clock::now(),entry_time)/1000;
 			if(elapsed_time>time_of_termination)
 			{
 				cout<<"Balanced Successful"<<endl;
-				entry_time=-1;
-				cout<<"total time taken in seconds: "<<(glutGet(GLUT_ELAPSED_TIME)-game_start_time)/1000<<endl;
+				entry_time=TimePoint();
+				cout<<"total time taken in seconds: "<<getTimeDifference(Clock::now(),game_start_time)/1000<<endl;
 				reset_env(30,15);
-			}
+			} 
 		}
 	}
 	else
 	{
-		entry_time=-1;
+		entry_time=TimePoint();
 	}
 }
 void BalanceGame::draw()
@@ -161,7 +163,7 @@ void BalanceGame::draw()
 	
 	glutSwapBuffers();
 	
-	isGameDone();
+	
 
 }
 
@@ -230,7 +232,7 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	stick->setAngularVelocity(btVector3(0,0,0));
 
 	RST=false;
-	game_start_time=glutGet(GLUT_ELAPSED_TIME);
+	game_start_time=Clock::now();
 }
 
 void BalanceGame::timer()
@@ -245,10 +247,15 @@ void BalanceGame::timer()
 		dynamicsWorld->stepSimulation(dtime, 10);
 		ballPos = ball->getCenterOfMassPosition();
 		ballVel = ball->getLinearVelocity();
-		motionang = -atan(ballVel.getY()/ballVel.getX())*180/SIMD_PI;
+		if(ballVel.getY()<=0)
+			motionang = -atan(ballVel.getY()/ballVel.getX())*180/SIMD_PI;
+		else
+			motionang = atan(ballVel.getY()/ballVel.getX())*180/SIMD_PI;
 	}
 
 	glutPostRedisplay();
+	isGameDone();
+	
 }
 
 void BalanceGame::keyboardFunc(int keycode)
@@ -267,7 +274,10 @@ void BalanceGame::keyboardFunc(int keycode)
 			break;
 	}
 }
-
+float BalanceGame::getTAR()
+{
+	return TAR;
+}
 void BalanceGame::mouseMotion(int x,int y)
 {
 	if(flag)
