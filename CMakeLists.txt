@@ -11,7 +11,3 @@ target_link_libraries(ballnstick glut GL GLU BulletSoftBody BulletDynamics Bulle
 add_executable(game src/play_game.cpp include/game.h src/game.cpp)
 set_target_properties(game PROPERTIES COMPILE_FLAGS "-DBT_USE_DOUBLE_PRECISION -I/usr/local/include/bullet -L/usr/X11/lib")
 target_link_libraries(game glut GL GLU BulletSoftBody BulletDynamics BulletCollision LinearMath X11 pthread)
-
-add_executable(mouse src/x11_test.cpp)
-set_target_properties(mouse PROPERTIES COMPILE_FLAGS "-L/usr/X11/lib")
-target_link_libraries(mouse X11)
