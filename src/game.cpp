@@ -7,7 +7,7 @@ bool BalanceGame::QUIT = false;
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;	
 float BalanceGame::range_of_termination=10;
-float BalanceGame::time_of_termination=5;
+float BalanceGame::time_of_termination=10;
 TimePoint BalanceGame::game_start_time=Clock::now(); // current time
 
 double getTimeDifference(TimePoint end, TimePoint start)
