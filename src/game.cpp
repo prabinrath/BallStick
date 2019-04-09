@@ -208,12 +208,17 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	//int disp=10;
 	x+=5*cos(SIMD_PI/2+changed_angle);
 	y+=5*sin(SIMD_PI/2+changed_angle);
-
-	double displace_from_center=disp-rand()%(2*disp);
-	double x_dis=displace_from_center*cos(changed_angle);
-	double y_dis=displace_from_center*sin(changed_angle);
 	
-	trans.setOrigin(btVector3(x+x_dis,y+y_dis+1,0));
+	double displace_from_center=disp-rand()%(2*disp);
+	double x_dis;
+	double y_dis;
+	x_dis=displace_from_center*cos(changed_angle);
+	y_dis=displace_from_center*sin(changed_angle);
+
+	if(y_dis>=0)
+		trans.setOrigin(btVector3(x+x_dis,y+y_dis+1,0));
+	else
+		trans.setOrigin(btVector3(x-x_dis,y-y_dis+1,0));
 	ball->setCenterOfMassTransform(trans);
 	ball->setAngularVelocity(btVector3(0,0,0));
 	ball->setLinearVelocity(btVector3(0,0,0));

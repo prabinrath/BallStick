@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 	char msg[512];
 	#if train
 	ofstream file;
-  	file.open ("datasets/dataset_new.txt");
+  	
   	#else
 	cout<<"Waiting for connection...\n";
 	CSocketServer srv(2300);
@@ -29,6 +29,7 @@ int main(int argc, char** argv)
 	BalanceGame game(argc,argv);
 	while(true)
 	{
+		
 		game.draw();
 		game.timer();
 		if(game.RST)
@@ -43,13 +44,14 @@ int main(int argc, char** argv)
 		#if train
 		if(getTimeDifference(Clock::now(), sampletime)>100 )
 		{
+			file.open ("datasets/dataset_new.txt",ios::app);
 			sprintf(msg,"%f,%f,%f,%f,%f\n",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang,game.getTAR());
 			cout<<msg<<endl;
 			if(game.ballPos.getX()>=-20 && game.ballPos.getX()<=20 && game.ballPos.getY()>=-20 && game.getTAR()!=0)
 				file << msg;
+			file.close();
 			sampletime=Clock::now();
 		}
-		file.close();
 		#else
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{
@@ -58,7 +60,6 @@ int main(int argc, char** argv)
 			sampletime=Clock::now();
 		}
 		#endif
-		file.close();
 	}
 	return 0;
 }
