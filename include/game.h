@@ -57,7 +57,7 @@ class BalanceGame
 		void timer();
 		void isGameDone();
 		float getTAR();
-		static void handleMouse();
+		static void handleEvents();
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	
 };

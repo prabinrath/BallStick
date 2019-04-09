@@ -6,7 +6,7 @@ bool BalanceGame::RST = false;
 bool BalanceGame::QUIT = false;                 
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;	
-float BalanceGame::range_of_termination=10;
+float BalanceGame::range_of_termination=5;
 float BalanceGame::time_of_termination=10;
 TimePoint BalanceGame::game_start_time=Clock::now(); // current time
 
@@ -66,7 +66,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	glMatrixMode(GL_MODELVIEW);
 	gluLookAt(0.0, 0.0, 90.0, 0.0, 8.0, 0.0, 0.0, 1.0, 0.0);
 	
-	this->mouse_handle = new thread(&BalanceGame::handleMouse);
+	this->mouse_handle = new thread(&BalanceGame::handleEvents);
 	//glutMainLoop();
 }
 
@@ -78,7 +78,7 @@ void BalanceGame::change_type(btScalar m[])
 	}
 }
 
-void BalanceGame::handleMouse()
+void BalanceGame::handleEvents()
 {
 	Display *display;
 	XEvent xevent;
@@ -104,7 +104,7 @@ void BalanceGame::handleMouse()
 }
 void BalanceGame::isGameDone()
 {
-	if(ballPos.length()>200)
+	if(ballPos.length()>30)
 	{
 		entry_time=TimePoint();
 		reset_env(30,15);

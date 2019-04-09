@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 	TimePoint time1=Clock::now();
 	BalanceGame game(argc,argv);
 	ofstream file;
-  	file.open ("src/dataset.txt", ios::app);
+  	file.open ("datasets/dataset_new.txt", ios::app);
 	while(true)
 	{
 		game.draw();
