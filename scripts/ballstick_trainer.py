@@ -7,7 +7,17 @@ from keras.optimizers import Adam
 import socket
 import sys
 import time
-train = False
+import sys
+print sys.argv[1]
+if sys.argv[1] == '1':
+	train = True
+else:
+	train = False
+
+'''
+4531ththth
+4641ththth
+'''
 
 if not train:
     server_addr = ('localhost', 2300)
@@ -79,10 +89,10 @@ else:
 		
 	trainy=0+(((trainy-(-90))/((90)-(-90)))*1)
 
-	model=Sequential([Dense(5,input_shape=(4,),activation='tanh'),Dense(3,activation='tanh'),Dense(1,activation='tanh')])
+	model=Sequential([Dense(6,input_shape=(4,),activation='tanh'),Dense(4,activation='tanh'),Dense(1,activation='tanh')])
 	model.summary()
 	model.compile(Adam(lr=0.001,decay=0.00001),loss='mean_squared_error')
-	model.fit(trainx,trainy,validation_split=0.1,batch_size=10,epochs=100,shuffle=True,verbose=2)
+	model.fit(trainx,trainy,validation_split=0.1,batch_size=10,epochs=60,shuffle=True,verbose=2)
 
 	pred = model.predict(testx,batch_size=4,verbose=2)
 	for i in range(0,len(pred)):
