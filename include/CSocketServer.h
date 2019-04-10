@@ -15,9 +15,9 @@ class CSocketServer
 		int nread;
 		struct sockaddr_in client;
 		int createSocket();
-		void closeSocket();
 	public:
 		CSocketServer(int port);
 		void sendMsg(void* msg, uint32_t msgsize);
 		void talkToclient(char* msg,int msgsize, char *buff,int buffsize);
+		void closeSocket();
 };

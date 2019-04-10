@@ -1,13 +1,16 @@
 #include<game.h>
 
-float BalanceGame::TAR = 0;                       
-bool BalanceGame::flag = false;                      
+float BalanceGame::TAR = 0;
+int BalanceGame::x_=3;
+int BalanceGame::y_=3;
+bool BalanceGame::setpointer=false;                      
+bool BalanceGame::lock = false;                      
 bool BalanceGame::RST = false;                   
 bool BalanceGame::QUIT = false;                 
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;	
 float BalanceGame::range_of_termination=5;
-float BalanceGame::time_of_termination=10;
+float BalanceGame::time_of_termination=3;
 TimePoint BalanceGame::game_start_time=Clock::now(); // current time
 
 double getTimeDifference(TimePoint end, TimePoint start)
@@ -24,7 +27,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	dynamicsWorld->setGravity(btVector3(0, -9.8, 0));
 	
 	//stick initialization
-	shape = new btBoxShape(btVector3(20,2.5,2.5));
+	shape = new btBoxShape(btVector3(30,2.5,2.5));
 	trans.setIdentity();
 	trans.setOrigin(btVector3(0, 0, 0));
 	motionState = new btDefaultMotionState(trans);
@@ -33,16 +36,16 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	stick = new btRigidBody(mass, motionState, shape, localInertia);
 	hinge = new btHingeConstraint(*stick, btVector3(0, 0, 0), btVector3(0, 0, 1), true);
 	hinge->enableMotor(true);
-	hinge->setMaxMotorImpulse(50.0f);
+	hinge->setMaxMotorImpulse(70.0f);
 	dynamicsWorld->addConstraint(hinge);
 	dynamicsWorld->addRigidBody(stick);
 	
 	//ball initialization
 	shape = new btSphereShape(btScalar(5));
 	trans.setIdentity();
-	trans.setOrigin(btVector3(10, 30, 0));
+	trans.setOrigin(btVector3(10, 20, 0));
 	motionState = new btDefaultMotionState(trans);
-	mass = 1.0;
+	mass = 3.0;
 	shape->calculateLocalInertia(mass, localInertia);
 	ball = new btRigidBody(mass, motionState, shape, localInertia);
 	ball->setLinearFactor(btVector3(1,1,0));
@@ -67,6 +70,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	gluLookAt(0.0, 0.0, 90.0, 0.0, 8.0, 0.0, 0.0, 1.0, 0.0);
 	
 	this->mouse_handle = new thread(&BalanceGame::handleEvents);
+	setpointer = false;
 	//glutMainLoop();
 }
 
@@ -100,15 +104,21 @@ void BalanceGame::handleEvents()
 		{
 			keyboardFunc(xevent.xkey.keycode);
 		}
+		if(setpointer)
+		{
+			XWarpPointer(display, None, window, 0, 0, 0, 0, x_, y_);
+			XFlush(display);
+			setpointer = false;
+		}
 	}
 }
 
 void BalanceGame::isGameDone()
 {
-	if(ballPos.length()>30)
+	if(ballPos.getX()>40 || ballPos.getX()<-40 || ballPos.getY()>200 || ballPos.getY()<-40)
 	{
 		entry_time=TimePoint();
-		reset_env(30,15);
+		reset_env(20,20);
 		return;
 	}
 	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
@@ -123,7 +133,7 @@ void BalanceGame::isGameDone()
 				cout<<"Balanced Successful"<<endl;
 				entry_time=TimePoint();
 				cout<<"total time taken in seconds: "<<getTimeDifference(Clock::now(),game_start_time)/1000<<endl;
-				reset_env(30,15);
+				reset_env(20,20);
 			} 
 		}
 	}
@@ -153,7 +163,13 @@ void BalanceGame::draw()
   	}
   	glEnd();
 	glPopMatrix();
-
+	
+	glPointSize(10.0f);
+  	glBegin(GL_POINTS);
+  	glColor3f(1,1,1);
+  	glVertex3f(0,0,3);
+  	glEnd();
+		
 	glColor3f(1.0, 0.0, 0.0);
 	glPushMatrix();	
 	ball->getMotionState()->getWorldTransform(trans);
@@ -162,11 +178,8 @@ void BalanceGame::draw()
 	glMultMatrixf(mat);
 	glutSolidSphere(5,200,200);
 	glPopMatrix();
-	
-	glutSwapBuffers();
-	
-	
 
+	glutSwapBuffers();
 }
 
 void BalanceGame::update_hinge_pos(float target, float kp, float dt)
@@ -190,33 +203,28 @@ void BalanceGame::update_hinge_pos(float target, float kp, float dt)
 
 void BalanceGame::reset_env(int angle_of_rotation,int disp)
 {
-	trans.setIdentity();
 	double default_angle=atan(2.5f/20.0f);
 	double radius=sqrt(pow(2.5,2)+pow(20,2));
 	srand(time(0));
 	double t=angle_of_rotation-rand()%(2*angle_of_rotation);
 	double changed_angle=(t)*SIMD_PI/180;
-	//cout<<default_angle*180/SIMD_PI<<"  "<<t<<endl;
 	double final_angle1=default_angle+changed_angle;
 	double final_angle2=final_angle1+SIMD_PI-2*default_angle;
-	//cout<<"final_angle1 : "<<final_angle1*180/SIMD_PI<<" "<<"final_angle2 :"<<final_angle2*180/SIMD_PI<<endl;
 	double x1=radius*cos(final_angle1);
 	double y1=radius*sin(final_angle1);
 	double x2=radius*cos(final_angle2);
 	double y2=radius*sin(final_angle2);
-	
 	double x=(x1+x2)/2;
 	double y=(y1+y2)/2;
-	//int disp=10;
 	x+=5*cos(SIMD_PI/2+changed_angle);
 	y+=5*sin(SIMD_PI/2+changed_angle);
-	
 	double displace_from_center=disp-rand()%(2*disp);
 	double x_dis;
 	double y_dis;
 	x_dis=displace_from_center*cos(changed_angle);
 	y_dis=displace_from_center*sin(changed_angle);
 
+	trans.setIdentity();
 	if(y_dis>=0)
 		trans.setOrigin(btVector3(x+x_dis,y+y_dis+1,0));
 	else
@@ -225,19 +233,18 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	ball->setAngularVelocity(btVector3(0,0,0));
 	ball->setLinearVelocity(btVector3(0,0,0));
 	trans.setIdentity();
+	
 	btQuaternion qtn;
-	
-	
 	trans.setIdentity();
 	qtn.setEuler(0.0, 0.0, changed_angle);
 	trans.setRotation(qtn);
 	trans.setOrigin(btVector3(0, 0, 0));
-
 	stick->setCenterOfMassTransform(trans);
-	TAR=-changed_angle*180/SIMD_PI;
+	TAR=-t;
+	y_ = (TAR+90)*767/180;
+	setpointer = true;
 	stick->setLinearVelocity(btVector3(0,0,0));
 	stick->setAngularVelocity(btVector3(0,0,0));
-
 	RST=false;
 	game_start_time=Clock::now();
 }
@@ -250,7 +257,8 @@ void BalanceGame::timer()
 
 	if(dynamicsWorld)
 	{
-		update_hinge_pos(TAR,0.06, dtime);
+		if(lock)
+			update_hinge_pos(TAR,0.06, dtime);
 		dynamicsWorld->stepSimulation(dtime, 10);
 		ballPos = ball->getCenterOfMassPosition();
 		ballVel = ball->getLinearVelocity();
@@ -270,7 +278,7 @@ void BalanceGame::keyboardFunc(int keycode)
 	switch(keycode)
 	{
 		case 65:
-			flag = true;
+			lock = true;
 			break;
 		case 27:
 			RST=true;
@@ -294,8 +302,8 @@ float BalanceGame::getTAR()
 
 void BalanceGame::mouseMotion(int x,int y)
 {
-	if(flag)
-		TAR = 180*(float)y/767 - 90;
+	x_=x;
+	TAR = 180*(float)y/767 - 90;
 }
 
 BalanceGame::~BalanceGame()

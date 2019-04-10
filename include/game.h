@@ -15,14 +15,19 @@ typedef chrono::system_clock::time_point TimePoint;
 class BalanceGame
 {
 	private:
-		GLfloat vertices[8][3] = {{-20, -2.5, -2.5}, {-20, -2.5, 2.5}, {-20, 2.5, -2.5}, {-20, 2.5, 2.5},{20, -2.5, -2.5}, {20, -2.5, 2.5}, {20, 2.5,-2.5}, {20, 2.5, 2.5}};
-
+		GLfloat vertices[8][3] = {{-30, -2.5, -2.5}, {-30, -2.5, 2.5}, {-30, 2.5, -2.5}, {-30, 2.5, 2.5},{30, -2.5, -2.5}, {30, -2.5, 2.5}, {30, 2.5,-2.5}, {30, 2.5, 2.5}};
 		GLint faces[6][4] = {{1, 5, 7, 3}, {5, 4, 6, 7}, {4, 0, 2, 6},{3, 7, 6, 2}, {0, 1, 3, 2}, {0, 4, 5, 1}};
 		float tme = 0.0,dtime;
 		btScalar matrix[16];
 		GLfloat mat[16];
+		static float range_of_termination;
+		static float time_of_termination;
+		static TimePoint entry_time;
+		static float elapsed_time;
+		static TimePoint game_start_time;
 		static float TAR;
-		static bool flag;
+		static bool setpointer;
+		static int x_,y_;
 		btTransform trans;
 		btDiscreteDynamicsWorld *dynamicsWorld;
 		btRigidBody *stick, *ball;
@@ -35,30 +40,24 @@ class BalanceGame
 		btScalar mass;
 		btVector3 localInertia;
 		TimePoint win;
+		thread *mouse_handle;
 		
 		void change_type(btScalar m[]);
 		void update_hinge_pos(float target, float kp, float dt);
+		void isGameDone();
+		static void handleEvents();
 		static void keyboardFunc(int);
 		static void mouseMotion(int x,int y);
 		
-				
 	public:
-		thread *mouse_handle;
-		static bool RST,QUIT;
-		static float range_of_termination;
-		static float time_of_termination;
-		static TimePoint entry_time;
-		static float elapsed_time;
-		static TimePoint game_start_time;
+		static bool RST,QUIT,lock;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
 		void timer();
-		void isGameDone();
 		void setTAR(float);
 		float getTAR();
-		static void handleEvents();
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	
 };
