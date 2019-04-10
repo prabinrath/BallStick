@@ -1,7 +1,7 @@
 #include<game.h>
 #include <CSocketServer.h>
 #include <fstream>
-#define train 1
+#define train 0
 
 extern double getTimeDifference(TimePoint end, TimePoint start);
 
@@ -10,7 +10,6 @@ int main(int argc, char** argv)
 	char msg[512];
 	#if train
 	ofstream file;
-  	
   	#else
 	cout<<"Waiting for connection...\n";
 	CSocketServer srv(2300);
@@ -46,7 +45,7 @@ int main(int argc, char** argv)
 		{
 			file.open ("datasets/dataset_new.txt",ios::app);
 			sprintf(msg,"%f,%f,%f,%f,%f\n",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang,game.getTAR());
-			cout<<msg<<endl;
+			cout<<msg;
 			if(game.ballPos.getX()>=-20 && game.ballPos.getX()<=20 && game.ballPos.getY()>=-20 && game.getTAR()!=0)
 				file << msg;
 			file.close();
@@ -55,8 +54,10 @@ int main(int argc, char** argv)
 		#else
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{
-			sprintf(msg,"%f,%f,%f,%f,%f\n",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang,game.getTAR());
+			sprintf(msg,"%f,%f,%f,%f",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang);
 			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
+			cout<<msg<<" | "<<atof(tar)<<endl;
+			game.setTAR(atof(tar));
 			sampletime=Clock::now();
 		}
 		#endif

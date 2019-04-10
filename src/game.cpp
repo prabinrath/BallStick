@@ -102,6 +102,7 @@ void BalanceGame::handleEvents()
 		}
 	}
 }
+
 void BalanceGame::isGameDone()
 {
 	if(ballPos.length()>30)
@@ -131,6 +132,7 @@ void BalanceGame::isGameDone()
 		entry_time=TimePoint();
 	}
 }
+
 void BalanceGame::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -279,10 +281,17 @@ void BalanceGame::keyboardFunc(int keycode)
 			break;
 	}
 }
+
+void BalanceGame::setTAR(float data)
+{
+	TAR = data;
+}
+
 float BalanceGame::getTAR()
 {
 	return TAR;
 }
+
 void BalanceGame::mouseMotion(int x,int y)
 {
 	if(flag)

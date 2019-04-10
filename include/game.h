@@ -56,6 +56,7 @@ class BalanceGame
 		void draw();
 		void timer();
 		void isGameDone();
+		void setTAR(float);
 		float getTAR();
 		static void handleEvents();
 		BalanceGame(int argc, char** argv);
