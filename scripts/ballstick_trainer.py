@@ -92,7 +92,7 @@ else:
 	model=Sequential([Dense(6,input_shape=(4,),activation='tanh'),Dense(4,activation='tanh'),Dense(1,activation='tanh')])
 	model.summary()
 	model.compile(Adam(lr=0.001,decay=0.00001),loss='mean_squared_error')
-	model.fit(trainx,trainy,validation_split=0.1,batch_size=10,epochs=60,shuffle=True,verbose=2)
+	model.fit(trainx,trainy,validation_split=0.1,batch_size=10,epochs=50,shuffle=True,verbose=2)
 
 	pred = model.predict(testx,batch_size=4,verbose=2)
 	for i in range(0,len(pred)):

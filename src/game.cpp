@@ -1,16 +1,22 @@
 #include<game.h>
 
 float BalanceGame::TAR = 0;
-int BalanceGame::x_=3;
-int BalanceGame::y_=3;
-bool BalanceGame::setpointer=false;                      
-bool BalanceGame::lock = false;                      
+int BalanceGame::x_=0;
+int BalanceGame::y_=0;
+bool BalanceGame::setpointer=false;                                           
 bool BalanceGame::RST = false;                   
 bool BalanceGame::QUIT = false;                 
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
-float BalanceGame::elapsed_time=0;	
+float BalanceGame::elapsed_time=0;
+#if train
 float BalanceGame::range_of_termination=5;
 float BalanceGame::time_of_termination=3;
+bool BalanceGame::lock = false; 
+#else
+float BalanceGame::range_of_termination=10;
+float BalanceGame::time_of_termination=3;
+bool BalanceGame::lock = true; 
+#endif
 TimePoint BalanceGame::game_start_time=Clock::now(); // current time
 
 double getTimeDifference(TimePoint end, TimePoint start)
@@ -240,9 +246,11 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	trans.setRotation(qtn);
 	trans.setOrigin(btVector3(0, 0, 0));
 	stick->setCenterOfMassTransform(trans);
-	TAR=-t;
+	#if train
+	TAR = -t;
 	y_ = (TAR+90)*767/180;
 	setpointer = true;
+	#endif
 	stick->setLinearVelocity(btVector3(0,0,0));
 	stick->setAngularVelocity(btVector3(0,0,0));
 	RST=false;
@@ -278,7 +286,12 @@ void BalanceGame::keyboardFunc(int keycode)
 	switch(keycode)
 	{
 		case 65:
-			lock = true;
+			#if train
+			if(!lock)
+				lock = true;
+			else
+				lock = false;
+			#endif
 			break;
 		case 27:
 			RST=true;
@@ -303,7 +316,9 @@ float BalanceGame::getTAR()
 void BalanceGame::mouseMotion(int x,int y)
 {
 	x_=x;
+	#if train
 	TAR = 180*(float)y/767 - 90;
+	#endif
 }
 
 BalanceGame::~BalanceGame()

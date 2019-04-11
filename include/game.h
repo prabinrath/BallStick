@@ -8,6 +8,7 @@
 #include <unistd.h>
 using namespace std;
 #define THETA SIMD_PI / 4.f
+#define train 0
 
 typedef chrono::high_resolution_clock Clock;
 typedef chrono::system_clock::time_point TimePoint;
@@ -26,7 +27,7 @@ class BalanceGame
 		static float elapsed_time;
 		static TimePoint game_start_time;
 		static float TAR;
-		static bool setpointer;
+		static bool setpointer,lock;
 		static int x_,y_;
 		btTransform trans;
 		btDiscreteDynamicsWorld *dynamicsWorld;
@@ -50,7 +51,7 @@ class BalanceGame
 		static void mouseMotion(int x,int y);
 		
 	public:
-		static bool RST,QUIT,lock;
+		static bool RST,QUIT;
 		btVector3 ballPos,ballVel;
 		float curang,motionang;
 		void reset_env(int,int);

@@ -1,7 +1,6 @@
 #include<game.h>
 #include <CSocketServer.h>
 #include <fstream>
-#define train 0
 
 extern double getTimeDifference(TimePoint end, TimePoint start);
 
@@ -26,9 +25,6 @@ int main(int argc, char** argv)
 	
 	TimePoint sampletime = Clock::now();
 	BalanceGame game(argc,argv);
-	#if !train
-	game.lock=true;
-	#endif
 	while(true)
 	{
 		
