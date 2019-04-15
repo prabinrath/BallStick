@@ -77,6 +77,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	
 	this->mouse_handle = new thread(&BalanceGame::handleEvents);
 	setpointer = false;
+	score = 0;
 	//glutMainLoop();
 }
 
@@ -137,6 +138,7 @@ void BalanceGame::isGameDone()
 			if(elapsed_time>time_of_termination)
 			{
 				cout<<"Balanced Successful"<<endl;
+				score++;
 				entry_time=TimePoint();
 				cout<<"total time taken in seconds: "<<getTimeDifference(Clock::now(),game_start_time)/1000<<endl;
 				reset_env(20,20);
@@ -149,9 +151,29 @@ void BalanceGame::isGameDone()
 	}
 }
 
+void BalanceGame::drawBitmapText(char *string,float x,float y,float z) 
+{  
+	char *c;
+	glRasterPos3f(x, y,z);
+	glColor3f(0, 255, 0); 
+	for (c=string; *c != '\0'; c++) 
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+	}
+}
+
 void BalanceGame::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glPointSize(10.0f);
+  	glBegin(GL_POINTS);
+  	glColor3f(1,1,1);
+  	glVertex3f(0,0,3);
+  	glEnd();
+  	char text[100];
+	sprintf(text,"Current Score: %d",score);
+	drawBitmapText(text,10,40,0);
 
 	glPushMatrix();
 	stick->getMotionState()->getWorldTransform(trans);
@@ -170,12 +192,6 @@ void BalanceGame::draw()
   	glEnd();
 	glPopMatrix();
 	
-	glPointSize(10.0f);
-  	glBegin(GL_POINTS);
-  	glColor3f(1,1,1);
-  	glVertex3f(0,0,3);
-  	glEnd();
-		
 	glColor3f(1.0, 0.0, 0.0);
 	glPushMatrix();	
 	ball->getMotionState()->getWorldTransform(trans);

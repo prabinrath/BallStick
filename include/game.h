@@ -49,10 +49,12 @@ class BalanceGame
 		static void handleEvents();
 		static void keyboardFunc(int);
 		static void mouseMotion(int x,int y);
+		void drawBitmapText(char *string,float x,float y,float z);
 		
 	public:
 		static bool RST,QUIT;
 		btVector3 ballPos,ballVel;
+		int score;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
