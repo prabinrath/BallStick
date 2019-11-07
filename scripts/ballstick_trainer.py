@@ -31,7 +31,7 @@ if not train:
         print "ERROR: Connection to %s refused" % repr(server_addr)
         sys.exit(1)
     try:
-        model=load_model('../weights/ballstick_new.h5')
+        model=load_model('/home/prabin/git/BallStick/benchmarks/4641ththth2.h5')
         while True:
             buff = s.recv(1024)
             print buff

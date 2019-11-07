@@ -225,8 +225,8 @@ void BalanceGame::update_hinge_pos(float target, float kp, float dt)
 
 void BalanceGame::reset_env(int angle_of_rotation,int disp)
 {
-	double default_angle=atan(2.5f/20.0f);
-	double radius=sqrt(pow(2.5,2)+pow(20,2));
+	double default_angle=atan(2.5f/30.0f);
+	double radius=sqrt(pow(2.5,2)+pow(30,2));
 	srand(time(0));
 	double t=angle_of_rotation-rand()%(2*angle_of_rotation);
 	double changed_angle=(t)*SIMD_PI/180;
