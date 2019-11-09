@@ -83,9 +83,9 @@ else:
 	
 	model = SVR(kernel='rbf')
 	model.fit(trainx,trainy)
+	print(model.score(testx,testy))
 	joblib.dump(model, '../weights/ballstick_svm.h5')
 	# model = joblib.load('../weights/ballstick_svm.h5')
-	# print(model.score(testx,testy))
 	# pred = model.predict(testx[0:1000])
 	# X_grid = np.arange(0, len(testy[0:1000]), 1)
 	# X_grid = X_grid.reshape((len(X_grid), 1))
