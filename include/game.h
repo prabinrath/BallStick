@@ -52,15 +52,17 @@ class BalanceGame
 		void drawBitmapText(char *string,float x,float y,float z);
 		
 	public:
-		static bool RST,QUIT;
+		static bool RST,QUIT,OVER;
 		btVector3 ballPos,ballVel;
-		int score;
+		int score,number_of_distances_from_center;
+		float fitness_value,total_gametime_in_seconds,penalty_per_drop,award_per_win,sum_of_distances_from_center;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
 		void timer();
 		void setTAR(float);
 		float getTAR();
+		float evaluateFitness();
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	
 };

@@ -24,6 +24,8 @@ int main(int argc, char** argv)
 	#endif
 	
 	TimePoint sampletime = Clock::now();
+	TimePoint GameStartTime=sampletime;
+	
 	BalanceGame game(argc,argv);
 	while(true)
 	{
@@ -41,7 +43,15 @@ int main(int argc, char** argv)
 			#endif
 			break;
 		}
-		
+		if(game.OVER)
+		{
+			
+			sprintf(msg,"%f",game.evaluateFitness());
+			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
+			
+			sampletime=Clock::now();
+			game.reset_env(20,20);
+		}
 		#if train
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{
@@ -52,16 +62,28 @@ int main(int argc, char** argv)
 				file << msg;
 			file.close();
 			sampletime=Clock::now();
+			
+			
 		}
 		#else
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{
+			if(getTimeDifference(Clock::now(), GameStartTime)> game.total_gametime_in_seconds*1000)
+			{
+				game.OVER=true;
+				GameStartTime=Clock::now();
+				continue;
+			}
 			//sprintf(msg,"%f,%f,%f,%f",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang);
 			sprintf(msg,"%f,%f,%f,%f",game.ballPos.getX(),game.ballPos.getY(),game.ballPos.length(),game.ballVel.length());
 			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
 			cout<<msg<<" | "<<atof(tar)<<endl;
 			game.setTAR(atof(tar)*2.5);
 			sampletime=Clock::now();
+			
+			//updating distance parameters of the game
+			game.number_of_distances_from_center++;
+			game.sum_of_distances_from_center+=game.ballPos.length();
 		}
 		#endif
 	}

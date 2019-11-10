@@ -5,7 +5,8 @@ int BalanceGame::x_=0;
 int BalanceGame::y_=0;
 bool BalanceGame::setpointer=false;                                           
 bool BalanceGame::RST = false;                   
-bool BalanceGame::QUIT = false;                 
+bool BalanceGame::QUIT = false; 
+bool BalanceGame::OVER = false;                 
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;
 #if train
@@ -78,6 +79,12 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	this->mouse_handle = new thread(&BalanceGame::handleEvents);
 	setpointer = false;
 	score = 0;
+	fitness_value=0;
+	total_gametime_in_seconds=20;
+	penalty_per_drop=100;
+	award_per_win=100;
+	number_of_distances_from_center=0;
+	sum_of_distances_from_center=0;
 	//glutMainLoop();
 }
 
@@ -126,6 +133,7 @@ void BalanceGame::isGameDone()
 	{
 		entry_time=TimePoint();
 		reset_env(20,20);
+		fitness_value-=penalty_per_drop;
 		return;
 	}
 	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
@@ -137,6 +145,7 @@ void BalanceGame::isGameDone()
 			elapsed_time=getTimeDifference(Clock::now(),entry_time)/1000;
 			if(elapsed_time>time_of_termination)
 			{
+				fitness_value+=award_per_win;
 				cout<<"Balanced Successful"<<endl;
 				score++;
 				entry_time=TimePoint();
@@ -174,7 +183,7 @@ void BalanceGame::draw()
   	char text[100];
 	sprintf(text,"Current Score: %d",score);
 	drawBitmapText(text,10,40,0);
-
+	
 	glPushMatrix();
 	stick->getMotionState()->getWorldTransform(trans);
 	trans.getOpenGLMatrix(matrix);
@@ -270,6 +279,7 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	stick->setLinearVelocity(btVector3(0,0,0));
 	stick->setAngularVelocity(btVector3(0,0,0));
 	RST=false;
+	OVER=false;
 	game_start_time=Clock::now();
 }
 
@@ -318,7 +328,18 @@ void BalanceGame::keyboardFunc(int keycode)
 			break;
 	}
 }
-
+float BalanceGame::evaluateFitness()
+{
+	
+	float w1=1,w2=1;  // weights for 2 different fitness function
+	float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
+	float fitness_value_for_mean_distance=300/(mean_distance_from_center);
+	float fitness_value_for_playing=fitness_value;
+	//TODO add time fitness
+	float total_fitness=w1*fitness_value_for_mean_distance+w2*fitness_value_for_playing;
+	return total_fitness;
+	
+}
 void BalanceGame::setTAR(float data)
 {
 	TAR = data;
