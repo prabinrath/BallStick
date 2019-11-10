@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-import joblib
+#import joblib
+from sklearn.externals import joblib
 import socket
 import sys
 import time
@@ -37,7 +38,7 @@ if not train:
                 for i in range(0,len(data)):
                 	data[i] = float(data[i])
                 data = np.array([data],np.float64)
-                model.predict(data)
+                pred = model.predict(data)
                 nsent = s.send(str(pred[0]))
     finally:
         print("Closing socket")
@@ -81,17 +82,17 @@ else:
 	testx = np.array(testx,np.float64)
 	testy = np.array(testy,np.float64)
 	
-	# model = LinearRegression().fit(testx, testy)
-	# print(model.score(testx,testy))
-	# joblib.dump(model, '../weights/ballstick_lir.h5')
-	model = joblib.load('../weights/ballstick_lir.h5')
-	pred = model.predict(testx[0:1000])
-	X_grid = np.arange(0, len(testy[0:1000]), 1)
-	X_grid = X_grid.reshape((len(X_grid), 1))
-	plt.plot(X_grid, sc_y.inverse_transform(testy[0:1000]), color = 'red')
-	plt.plot(X_grid, sc_y.inverse_transform(pred[0:1000]), color = 'blue')
-	plt.title('Result')
-	plt.show()
+	model = LinearRegression().fit(testx, testy)
+	print(model.score(testx,testy))
+	joblib.dump(model, '../weights/ballstick_lir.h5')
+	# model = joblib.load('../weights/ballstick_lir.h5')
+	# pred = model.predict(testx[0:1000])
+	# X_grid = np.arange(0, len(testy[0:1000]), 1)
+	# X_grid = X_grid.reshape((len(X_grid), 1))
+	# plt.plot(X_grid, sc_y.inverse_transform(testy[0:1000]), color = 'red')
+	# plt.plot(X_grid, sc_y.inverse_transform(pred[0:1000]), color = 'blue')
+	# plt.title('Result')
+	# plt.show()
 	# for i in range(0,len(testy)):
 	# 	pred = model.predict([testx[i]])
 	# 	print(sc_y.inverse_transform([testy[i]]),sc_y.inverse_transform([pred]))

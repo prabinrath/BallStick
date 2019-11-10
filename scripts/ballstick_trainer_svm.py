@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
-import joblib
+#import joblib
+from sklearn.externals import joblib
 import socket
 import sys
 import time
@@ -37,7 +38,7 @@ if not train:
                 for i in range(0,len(data)):
                 	data[i] = float(data[i])
                 data = np.array([data],np.float64)
-                model.predict(data)
+                pred = model.predict(data)
                 nsent = s.send(str(pred[0]))
     finally:
         print("Closing socket")
