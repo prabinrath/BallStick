@@ -3,12 +3,13 @@
 #include <fstream>
 
 
+float sum_of_angles_in_seconds=0;
+int number_of_angles=0;
 float number_of_distances_from_center=0;
 int	sum_of_distances_from_center=0;
 extern double getTimeDifference(TimePoint end, TimePoint start);
-bool isGameTimeOVER=false;
 int main(int argc, char** argv)
-{
+{	
 	char msg[512];
 	#if train
 	ofstream file;
@@ -35,8 +36,28 @@ int main(int argc, char** argv)
 		
 		game.draw();
 		game.timer();
-		if(game.RST)
+		
+		if(game.indivisual_score >= 20)
 		{
+			float avg_of_angles=sum_of_angles_in_seconds/number_of_angles;
+			float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
+			float fitness=game.evaluateFitness2(GameStartTime,avg_of_angles,mean_distance_from_center);
+			printf("score is %f \n",fitness);
+			sprintf(msg,"%f,%f",fitness,(float)(game.indivisual_score));
+			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
+			
+			number_of_angles=0;
+			sum_of_angles_in_seconds=0;
+			number_of_distances_from_center=0;
+			sum_of_distances_from_center=0;
+			game.reset_env(20,20);
+			
+			sampletime=Clock::now();
+			GameStartTime=sampletime;
+			
+		}
+		if(game.RST)
+		{	
 			game.reset_env(20,20);
 		}
 		if(game.QUIT)
@@ -46,50 +67,58 @@ int main(int argc, char** argv)
 			#endif
 			break;
 		}
-		if(isGameTimeOVER)
+		if(game.ISBALLDROPPED)
 		{
+			
+			
+			float avg_of_angles=sum_of_angles_in_seconds/number_of_angles;
 			float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
-			sprintf(msg,"%f",game.evaluateFitness1(mean_distance_from_center));
+			float fitness=game.evaluateFitness2(GameStartTime,avg_of_angles,mean_distance_from_center);
+			printf("score is %f \n",fitness);
+			sprintf(msg,"%f,%f",fitness,(float)(game.indivisual_score));
 			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
 			
-			sampletime=Clock::now();
-			game.reset_env(20,20);
+			number_of_angles=0;
+			sum_of_angles_in_seconds=0;
+			number_of_distances_from_center=0;
+			sum_of_distances_from_center=0;
 			
+			
+			game.reset_env(20,20);
+
+			sampletime=Clock::now();
+			GameStartTime=sampletime;
 		}
 		#if train
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{
 			file.open ("datasets/dataset_new.txt",ios::app);
 			sprintf(msg,"%f,%f,%f,%f,%f,%f,%f\n",game.ballPos.getX(),game.ballPos.getY(),game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang,game.getTAR());
-			cout<<msg;
+			//cout<<msg;
 			if(game.ballPos.getX()>=-30 && game.ballPos.getX()<=30 && game.ballPos.getY()>=-20)
 				file << msg;
 			file.close();
 			sampletime=Clock::now();
 			
 			
-		}
+		}	
 		#else
 		if(getTimeDifference(Clock::now(), sampletime)>50 )
 		{	
 			
-			if(getTimeDifference(Clock::now(), GameStartTime)> game.total_gametime_in_seconds*1000)
-			{
-				isGameTimeOVER=true;
-				GameStartTime=Clock::now();
-				continue;
-			}
-			//sprintf(msg,"%f,%f,%f,%f",game.ballPos.length(),game.ballVel.length(),game.curang,game.motionang);
 			sprintf(msg,"%f,%f,%f,%f",game.ballPos.getX(),game.ballPos.getY(),game.ballPos.length(),game.ballVel.length());
 			srv.talkToclient(msg,strlen(msg),tar,sizeof(tar));
-			cout<<msg<<" | "<<atof(tar)<<endl;
+			//cout<<msg<<" | "<<atof(tar)<<endl;
 			game.setTAR(atof(tar));
 			sampletime=Clock::now();
 			
 			//updating distance parameters of the game
 			number_of_distances_from_center++;
 			sum_of_distances_from_center+=game.ballPos.length();
-		}
+			number_of_angles++;
+			sum_of_angles_in_seconds+=abs(game.curang);
+			
+		}	
 		#endif
 	}
 	return 0;

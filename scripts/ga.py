@@ -44,7 +44,7 @@ class Population(object):
         self.fitness_history.append(pop_fitness)
 
         # Set Done flag if we hit target
-        if int(round(pop_fitness)) == 100000:
+        if int(round(pop_fitness)) > 40000:
             self.done = True
 
         if generation is not None:

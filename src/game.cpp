@@ -5,8 +5,8 @@ int BalanceGame::x_=0;
 int BalanceGame::y_=0;
 bool BalanceGame::setpointer=false;                                           
 bool BalanceGame::RST = false;                   
-bool BalanceGame::QUIT = false; 
-bool BalanceGame::OVER = false;                 
+bool BalanceGame::QUIT = false;  
+bool BalanceGame::ISBALLDROPPED=false;               
 TimePoint BalanceGame::entry_time=TimePoint();  // 0 ms
 float BalanceGame::elapsed_time=0;
 #if train
@@ -70,7 +70,7 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
-
+	
 	glMatrixMode(GL_PROJECTION);
 	gluPerspective( 50.0, 1.0, 20.0, 100.0);
 	glMatrixMode(GL_MODELVIEW);
@@ -83,8 +83,8 @@ BalanceGame::BalanceGame(int argc, char** argv)
 	total_gametime_in_seconds=20;
 	penalty_per_drop=100;
 	award_per_win=100;
-	number_of_distances_from_center=0;
-	sum_of_distances_from_center=0;
+	total_time_spent_near_center=0;
+	indivisual_score=0;
 	//glutMainLoop();
 }
 
@@ -129,11 +129,12 @@ void BalanceGame::handleEvents()
 
 void BalanceGame::isGameDone()
 {
-	if(ballPos.getX()>40 || ballPos.getX()<-40 || ballPos.getY()>200 || ballPos.getY()<-40)
+	if(ballPos.getX()>40 || ballPos.getX()<-40 || ballPos.getY()>60 || ballPos.getY()<-40)
 	{
 		entry_time=TimePoint();
 		reset_env(20,20);
 		fitness_value-=penalty_per_drop;
+		ISBALLDROPPED=true;
 		return;
 	}
 	if(ballPos.length() < sqrt(pow(7.5,2)+pow(range_of_termination,2)))
@@ -148,15 +149,22 @@ void BalanceGame::isGameDone()
 				fitness_value+=award_per_win;
 				cout<<"Balanced Successful"<<endl;
 				score++;
+				indivisual_score++;
 				entry_time=TimePoint();
-				cout<<"total time taken in seconds: "<<getTimeDifference(Clock::now(),game_start_time)/1000<<endl;
+				//cout<<"total time taken in seconds: "<<getTimeDifference(Clock::now(),game_start_time)/1000<<endl;
 				reset_env(20,20);
 			} 
 		}
 	}
 	else
-	{
+	{	
+		if(entry_time!=TimePoint())
+		{
+			float time_spent_near_center=getTimeDifference(Clock::now(),entry_time)/1000;
+			total_time_spent_near_center+=time_spent_near_center;
+		}
 		entry_time=TimePoint();
+		
 	}
 }
 
@@ -254,7 +262,7 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	double y_dis;
 	x_dis=displace_from_center*cos(changed_angle);
 	y_dis=displace_from_center*sin(changed_angle);
-
+	
 	trans.setIdentity();
 	if(y_dis>=0)
 		trans.setOrigin(btVector3(x+x_dis,y+y_dis+1,0));
@@ -279,7 +287,8 @@ void BalanceGame::reset_env(int angle_of_rotation,int disp)
 	stick->setLinearVelocity(btVector3(0,0,0));
 	stick->setAngularVelocity(btVector3(0,0,0));
 	RST=false;
-	OVER=false;
+	ISBALLDROPPED=false;
+	indivisual_score=0;
 	game_start_time=Clock::now();
 }
 
@@ -328,18 +337,48 @@ void BalanceGame::keyboardFunc(int keycode)
 			break;
 	}
 }
-float BalanceGame::evaluateFitness()
+
+//for play_game.cpp
+float BalanceGame::evaluateFitness1(float mean_distance_from_center)
 {
 	
 	float w1=1,w2=1;  // weights for 2 different fitness function
-	float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
-	float fitness_value_for_mean_distance=300/(mean_distance_from_center);
+	//float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
+	float fitness_value_for_mean_distance=10000/(mean_distance_from_center);
 	float fitness_value_for_playing=fitness_value;
 	//TODO add time fitness
 	float total_fitness=w1*fitness_value_for_mean_distance+w2*fitness_value_for_playing;
 	return total_fitness;
 	
 }
+
+//for play_game_for_ga_selfplaying
+// to be added convergence criteria 
+float BalanceGame::evaluateFitness2(TimePoint GameStartTime,float avg_of_angles,float mean_distance_from_center)
+{
+	
+	float w1=0.3,w2=1,w3=0.3,w4=0;  // weights for 4 different fitness function
+	//float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
+	
+	float fitness_value_for_mean_distance=10000/(mean_distance_from_center);  // range(4000,138)
+	float fitness_value_for_playing=getTimeDifference(Clock::now(),GameStartTime)/5; // (gametime in seconds)*200 (400,800)
+	float fitness_for_avg_angles=1000*log(10* (1-avg_of_angles/90) + avg_of_angles/90 )/log(10);   //range  (0,1000)
+	float fitness_for_time_spent_about_center=total_time_spent_near_center*200;
+	float total_fitness=w1*fitness_value_for_mean_distance+
+	w2*fitness_value_for_playing+
+	w3*fitness_for_avg_angles+
+	w4*fitness_for_time_spent_about_center
+	;
+	cout<<"avg_dis: "<<w1*fitness_value_for_mean_distance<<
+	", Totime: "<<w2*fitness_value_for_playing<<
+	", avg_ang: "<<w3*fitness_for_avg_angles<<
+	", tm_in_center: "<<w4*fitness_for_time_spent_about_center<<endl;
+	
+	total_time_spent_near_center=0;
+	return total_fitness;
+}
+
+
 void BalanceGame::setTAR(float data)
 {
 	TAR = data;

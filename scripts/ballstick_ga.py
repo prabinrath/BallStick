@@ -52,7 +52,7 @@ except:
     sys.exit(1)
 try:
 	model=load_model('/home/prabin/git/BallStick/benchmarks/4641ththth2.h5')
-	pop_size = 50
+	pop_size = 10
 	mutate_prob = 0.05
 	retain = 0.1
 	random_retain = 0.05
@@ -69,14 +69,19 @@ try:
 	while True:
 		fitness_vals = []
 		fitness_sum = 0
-		for ind in pop.individuals:
-			model = setTrainedWeights(model,ind.numbers)
+		max_score = 0
+		max_index = 0
+		for ind in range(len(pop.individuals)):
+			model = setTrainedWeights(model,pop.individuals[ind].numbers)
 			nsent = s.send('ALL_SET')
 			while True:
 				buff = s.recv(1024)
 				data = buff.split(',')
-				if len(data)==1:
+				if len(data)==2:
 					print('Generation: {}, Fitness: {}'.format(generation,data[0]))
+					if float(data[1])>max_score:
+						max_score = float(data[1])
+						max_index = ind
 					fitness_vals.append(data[0])
 					fitness_sum+=float(data[0])
 					break
@@ -86,20 +91,29 @@ try:
 					data = np.array([data],np.float64)
 					max_v=[1,1,1,1];
 					min_v=[0,0,0,0];
-					max_rv=[30,30,300,300]
-					min_rv=[-30,-30,0,0]
+					max_rv=[40,60,80,200]
+					min_rv=[-40,-40,0,0]
 					for i in range(4):
-					    data[:,i]=min_v[i]+(((data[:,i]-min_rv[i])/(max_rv[i]-min_rv[i]))*max_v[i])
+					    data[:,i]=min_v[i]+(((data[:,i]-min_rv[i])/(max_rv[i]-min_rv[i]))*(max_v[i]-min_v[i]))
 					pred = model.predict(data,batch_size=4,verbose=2)
-					pred=-90+pred[0]*(90-(-90))
+					pred = 90*pred[0]
 					nsent = s.send(str(pred[0]))
 		pop.grade(fitness_sum,generation)
-		pop.evolve(fitness_vals)
+		print sorted(fitness_vals,reverse=True)[:5]
+		print('Generation: {} ----------------- Max Score: {}'.format(generation,max_score))
 		if pop.done:
 		    print("Finished at generation:", x, ", Population fitness:", pop.fitness_history[-1])
-		    model.save('/home/prabin/git/BallStick/weights/ballstick_ga.h5')
+		    model = setTrainedWeights(model,pop.individuals[max_index].numbers)
+		    model.save('/home/prabin/git/BallStick/weights/ballstick_ga_final.h5')
 		    break
+		if generation%20 == 0:
+			bench_individuals = [x for _,x in sorted(zip(fitness_vals,pop.individuals),reverse=True)]
+			model = setTrainedWeights(model,bench_individuals[0].numbers)
+			model.save('/home/prabin/git/BallStick/weights/ballstick_ga'+str(generation)+'.h5')
+			print "Benchmark model weights saved !!!"
+		pop.evolve(fitness_vals)
 		generation = generation+1
+		
 finally:
 	print "Closing socket"
 s.close()

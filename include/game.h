@@ -10,8 +10,10 @@ using namespace std;
 #define THETA SIMD_PI / 4.f
 #define train 0
 
+
 typedef chrono::high_resolution_clock Clock;
 typedef chrono::system_clock::time_point TimePoint;
+
 
 class BalanceGame
 {
@@ -52,17 +54,20 @@ class BalanceGame
 		void drawBitmapText(char *string,float x,float y,float z);
 		
 	public:
-		static bool RST,QUIT,OVER;
+		static bool RST,QUIT;
+		static bool ISBALLDROPPED;
 		btVector3 ballPos,ballVel;
-		int score,number_of_distances_from_center;
-		float fitness_value,total_gametime_in_seconds,penalty_per_drop,award_per_win,sum_of_distances_from_center;
+		int score,indivisual_score;
+		float fitness_value,total_gametime_in_seconds,penalty_per_drop,award_per_win,
+		total_time_spent_near_center;
 		float curang,motionang;
 		void reset_env(int,int);
 		void draw();
 		void timer();
 		void setTAR(float);
 		float getTAR();
-		float evaluateFitness();
+		float evaluateFitness1(float mean_distance_from_center);
+		float evaluateFitness2(TimePoint GameStartTime,float avg_of_angles,float mean_distance_from_center);
 		BalanceGame(int argc, char** argv);
 		~BalanceGame();	
 };
