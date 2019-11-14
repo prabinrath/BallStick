@@ -357,7 +357,7 @@ float BalanceGame::evaluateFitness1(float mean_distance_from_center)
 float BalanceGame::evaluateFitness2(TimePoint GameStartTime,float avg_of_angles,float mean_distance_from_center)
 {
 	
-	float w1=0.3,w2=1,w3=0.3,w4=0;  // weights for 4 different fitness function
+	float w1=0.3,w2=0.5,w3=0.3,w4=0.5;  // weights for 4 different fitness function
 	//float mean_distance_from_center=sum_of_distances_from_center/number_of_distances_from_center;
 	
 	float fitness_value_for_mean_distance=10000/(mean_distance_from_center);  // range(4000,138)

@@ -82,7 +82,7 @@ try:
 					if float(data[1])>max_score:
 						max_score = float(data[1])
 						max_index = ind
-					fitness_vals.append(data[0])
+					fitness_vals.append(float(data[0]))
 					fitness_sum+=float(data[0])
 					break
 				else:
@@ -99,7 +99,6 @@ try:
 					pred = 90*pred[0]
 					nsent = s.send(str(pred[0]))
 		pop.grade(fitness_sum,generation)
-		print sorted(fitness_vals,reverse=True)[0:5]
 		print('Generation: {} ----------------- Max Score: {}'.format(generation,max_score))
 		if pop.done:
 		    print("Finished at generation:", x, ", Population fitness:", pop.fitness_history[-1])
