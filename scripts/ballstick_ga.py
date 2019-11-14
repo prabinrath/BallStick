@@ -52,7 +52,7 @@ except:
     sys.exit(1)
 try:
 	model=load_model('/home/prabin/git/BallStick/benchmarks/4641ththth2.h5')
-	pop_size = 10
+	pop_size = 50
 	mutate_prob = 0.05
 	retain = 0.1
 	random_retain = 0.05
@@ -99,7 +99,7 @@ try:
 					pred = 90*pred[0]
 					nsent = s.send(str(pred[0]))
 		pop.grade(fitness_sum,generation)
-		print sorted(fitness_vals,reverse=True)[:5]
+		print sorted(fitness_vals,reverse=True)[0:5]
 		print('Generation: {} ----------------- Max Score: {}'.format(generation,max_score))
 		if pop.done:
 		    print("Finished at generation:", x, ", Population fitness:", pop.fitness_history[-1])

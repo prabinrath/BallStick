@@ -17,6 +17,7 @@ def getTrainableWeights(mdl):
     return weights
 
 old_wt = getTrainableWeights(model)
+print(max(old_wt), min(old_wt))
 
 def setTrainedWeights(mdl,weights):
     cnt=0
